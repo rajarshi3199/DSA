@@ -1,0 +1,32 @@
+class Solution:
+    def maximizeSquareArea(self, m: int, n: int, hFences: list[int], vFences: list[int]) -> int:
+        # Step 1: Add the boundary fences that cannot be removed
+        h_fences = sorted(hFences + [1, m])
+        v_fences = sorted(vFences + [1, n])
+        
+        # Step 2: Function to find all possible distances between any two fences
+        def get_all_gaps(fences):
+            gaps = set()
+            for i in range(len(fences)):
+                for j in range(i + 1, len(fences)):
+                    gaps.add(abs(fences[j] - fences[i]))
+            return gaps
+        
+        # Get sets of all possible side lengths
+        h_gaps = get_all_gaps(h_fences)
+        v_gaps = get_all_gaps(v_fences)
+        
+        # Step 3: Find the largest common side length
+        max_side = -1
+        # Intersection of sets gives all common side lengths
+        common_gaps = h_gaps.intersection(v_gaps)
+        
+        if common_gaps:
+            max_side = max(common_gaps)
+            
+        # Step 4: Return area modulo 10^9 + 7
+        if max_side == -1:
+            return -1
+        
+        MOD = 10**9 + 7
+        return (max_side * max_side) % MOD
