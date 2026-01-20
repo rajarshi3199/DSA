@@ -1,0 +1,18 @@
+class Solution:
+    def minBitwiseArray(self, nums: list[int]) -> list[int]:
+        ans = []
+        
+        for target in nums:
+            found = False
+            # We search for 'a' such that (a OR a+1) == target.
+            # Since (a OR a+1) is always >= a, we only check up to 'target'.
+            for a in range(target + 1):
+                if (a | (a + 1)) == target:
+                    ans.append(a)
+                    found = True
+                    break
+            
+            if not found:
+                ans.append(-1)
+                
+        return ans
