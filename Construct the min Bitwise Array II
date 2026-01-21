@@ -1,0 +1,23 @@
+class Solution:
+    def minBitwiseArray(self, nums: list[int]) -> list[int]:
+        ans = []
+        for x in nums:
+            if x == 2:
+                ans.append(-1)
+                continue
+            
+            # Find the lowest 0-bit by looking for the 
+            # end of the trailing string of 1s
+            # Example: 11 (1011) -> lowest 0 is at bit index 2
+            # We want to flip the bit to the right of the first 0.
+            
+            res = x
+            for i in range(31):
+                # Check if the i-th bit is a 0
+                if not (x & (1 << i)):
+                    # Flip the (i-1)-th bit of x to 0
+                    res = x ^ (1 << (i - 1))
+                    break
+            ans.append(res)
+            
+        return ans
