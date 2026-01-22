@@ -1,0 +1,34 @@
+class Solution:
+    def minimumPairRemoval(self, nums: list[int]) -> int:
+        operations = 0
+        
+        # Function to check if the array is currently non-decreasing
+        def is_non_decreasing(arr):
+            for i in range(len(arr) - 1):
+                if arr[i] > arr[i + 1]:
+                    return False
+            return True
+        
+        # We use a copy of the list to avoid modifying the input if necessary
+        curr_nums = list(nums)
+        
+        # Simulate the greedy process
+        while not is_non_decreasing(curr_nums):
+            min_sum = float('inf')
+            target_idx = -1
+            
+            # 1. Scan the array for the leftmost pair with the minimum sum
+            for i in range(len(curr_nums) - 1):
+                pair_sum = curr_nums[i] + curr_nums[i+1]
+                if pair_sum < min_sum:
+                    min_sum = pair_sum
+                    target_idx = i
+            
+            # 2. Replace the pair at target_idx with their sum
+            # This reduces the array size by 1 each iteration
+            new_val = curr_nums[target_idx] + curr_nums[target_idx + 1]
+            curr_nums = curr_nums[:target_idx] + [new_val] + curr_nums[target_idx + 2:]
+            
+            operations += 1
+            
+        return operations
