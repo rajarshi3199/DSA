@@ -1,0 +1,18 @@
+class Solution:
+    def minPairSum(self, nums: list[int]) -> int:
+        # Step 1: Sort the array
+        nums.sort()
+        
+        n = len(nums)
+        max_sum = 0
+        
+        # Step 2: Pair the smallest with the largest using two pointers
+        for i in range(n // 2):
+            # Pair (nums[i], nums[n - 1 - i])
+            current_pair_sum = nums[i] + nums[n - 1 - i]
+            
+            # Step 3: Update the maximum pair sum
+            if current_pair_sum > max_sum:
+                max_sum = current_pair_sum
+                
+        return max_sum
