@@ -1,0 +1,31 @@
+/**
+ * @param {number[]} arr
+ * @return {number[][]}
+ */
+var minimumAbsDifference = function(arr) {
+    // Step 1: Sort the array numerically
+    // O(n log n)
+    arr.sort((a, b) => a - b);
+
+    let minDiff = Infinity;
+    const result = [];
+
+    // Step 2: Find the minimum absolute difference
+    // O(n)
+    for (let i = 0; i < arr.length - 1; i++) {
+        let diff = arr[i+1] - arr[i];
+        if (diff < minDiff) {
+            minDiff = diff;
+        }
+    }
+
+    // Step 3: Collect all pairs with that minimum difference
+    // O(n)
+    for (let i = 0; i < arr.length - 1; i++) {
+        if (arr[i+1] - arr[i] === minDiff) {
+            result.push([arr[i], arr[i+1]]);
+        }
+    }
+
+    return result;
+};
