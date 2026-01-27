@@ -1,0 +1,45 @@
+import heapq
+from collections import defaultdict
+
+class Solution:
+    def minCost(self, n: int, edges: list[list[int]]) -> int:
+        # Standard adjacency list: u -> (v, weight)
+        adj = defaultdict(list)
+        # Reverse adjacency list: v -> (u, weight) 
+        # (Used to find incoming edges to reverse)
+        rev_adj = defaultdict(list)
+        
+        for u, v, w in edges:
+            adj[u].append((v, w))
+            rev_adj[v].append((u, w))
+            
+        # min_costs[u] = minimum cost to reach node u
+        min_costs = [float('inf')] * n
+        min_costs[0] = 0
+        
+        # Priority Queue stores: (cost, current_node)
+        pq = [(0, 0)]
+        
+        while pq:
+            curr_cost, u = heapq.heappop(pq)
+            
+            if curr_cost > min_costs[u]:
+                continue
+            
+            if u == n - 1:
+                return curr_cost
+            
+            # 1. Traverse normal outgoing edges
+            for v, w in adj[u]:
+                if curr_cost + w < min_costs[v]:
+                    min_costs[v] = curr_cost + w
+                    heapq.heappush(pq, (min_costs[v], v))
+            
+            # 2. Use the switch at node u to reverse an incoming edge v -> u
+            # and immediately travel to v. Cost is 2 * w.
+            for v, w in rev_adj[u]:
+                if curr_cost + 2 * w < min_costs[v]:
+                    min_costs[v] = curr_cost + 2 * w
+                    heapq.heappush(pq, (min_costs[v], v))
+                    
+        return min_costs[n-1] if min_costs[n-1] != float('inf') else -1
