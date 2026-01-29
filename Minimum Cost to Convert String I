@@ -1,0 +1,36 @@
+class Solution:
+    def minimumCost(self, source: str, target: str, original: list[str], changed: list[str], cost: list[int]) -> int:
+        # Initialize a 26x26 matrix with infinity
+        # dist[i][j] is the min cost to change char i to char j
+        dist = [[float('inf')] * 26 for _ in range(26)]
+        
+        # Distance to self is always 0
+        for i in range(26):
+            dist[i][i] = 0
+            
+        # Map characters to 0-25 indices and fill initial costs
+        for o, c, z in zip(original, changed, cost):
+            u, v = ord(o) - ord('a'), ord(c) - ord('a')
+            dist[u][v] = min(dist[u][v], z)
+            
+        # Floyd-Warshall to find all-pairs shortest paths
+        for k in range(26):
+            for i in range(26):
+                for j in range(26):
+                    if dist[i][k] + dist[k][j] < dist[i][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+                        
+        total_cost = 0
+        for s, t in zip(source, target):
+            if s == t:
+                continue
+            
+            u, v = ord(s) - ord('a'), ord(t) - ord('a')
+            res = dist[u][v]
+            
+            if res == float('inf'):
+                return -1
+            
+            total_cost += res
+            
+        return total_cost
