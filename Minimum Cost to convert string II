@@ -1,0 +1,50 @@
+class Solution:
+    def minimumCost(self, source: str, target: str, original: list[str], changed: list[str], cost: list[int]) -> int:
+        n = len(source)
+        # 1. Map all unique strings to IDs
+        nodes = list(set(original) | set(changed))
+        s_to_id = {s: i for i, s in enumerate(nodes)}
+        num_nodes = len(nodes)
+        
+        # 2. Floyd-Warshall to find min cost between any two strings
+        dist = [[float('inf')] * num_nodes for _ in range(num_nodes)]
+        for i in range(num_nodes):
+            dist[i][i] = 0
+            
+        for o, c, z in zip(original, changed, cost):
+            u, v = s_to_id[o], s_to_id[c]
+            dist[u][v] = min(dist[u][v], z)
+            
+        for k in range(num_nodes):
+            for i in range(num_nodes):
+                for j in range(num_nodes):
+                    if dist[i][k] + dist[k][j] < dist[i][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+        
+        # 3. Dynamic Programming
+        dp = [float('inf')] * (n + 1)
+        dp[0] = 0
+        
+        # Pre-filter original/changed strings by length for faster lookup
+        possible_lengths = sorted(list(set(len(s) for s in nodes)))
+        
+        for i in range(1, n + 1):
+            # Option 1: Current characters match
+            if source[i-1] == target[i-1]:
+                dp[i] = min(dp[i], dp[i-1])
+            
+            # Option 2: Try converting a substring ending at i-1
+            for length in possible_lengths:
+                if length > i: break
+                j = i - length
+                sub_s = source[j:i]
+                sub_t = target[j:i]
+                
+                if sub_s == sub_t:
+                    dp[i] = min(dp[i], dp[j])
+                elif sub_s in s_to_id and sub_t in s_to_id:
+                    u, v = s_to_id[sub_s], s_to_id[sub_t]
+                    if dist[u][v] != float('inf'):
+                        dp[i] = min(dp[i], dp[j] + dist[u][v])
+                        
+        return dp[n] if dp[n] != float('inf') else -1
