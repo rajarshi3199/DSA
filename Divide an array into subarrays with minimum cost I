@@ -1,0 +1,10 @@
+class Solution:
+    def minimumCost(self, nums: list[int]) -> int:
+        # The first element is always the cost of the first subarray
+        first_cost = nums[0]
+        
+        # The remaining elements can be the start of the 2nd and 3rd subarrays
+        # We need the two smallest values from the rest of the array
+        remaining = sorted(nums[1:])
+        
+        return first_cost + remaining[0] + remaining[1]
