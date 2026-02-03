@@ -1,0 +1,34 @@
+class Solution:
+    def isTrionic(self, nums: list[int]) -> bool:
+        n = len(nums)
+        if n < 4:  # Minimal trionic array would be [1, 2, 1, 2]
+            return False
+        
+        i = 0
+        
+        # 1. Strictly Increasing Segment (0 to p)
+        while i + 1 < n and nums[i] < nums[i+1]:
+            i += 1
+        
+        # If we didn't increase or we reached the end
+        if i == 0 or i == n - 1:
+            return False
+        
+        p = i # First turning point (Peak)
+        
+        # 2. Strictly Decreasing Segment (p to q)
+        while i + 1 < n and nums[i] > nums[i+1]:
+            i += 1
+            
+        # If we didn't decrease or we reached the end
+        if i == p or i == n - 1:
+            return False
+        
+        q = i # Second turning point (Valley)
+        
+        # 3. Strictly Increasing Segment (q to n-1)
+        while i + 1 < n and nums[i] < nums[i+1]:
+            i += 1
+            
+        # If we reached the end of the array, it's valid
+        return i == n - 1
