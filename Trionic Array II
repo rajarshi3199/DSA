@@ -1,0 +1,92 @@
+class Solution:
+    def maxSumTrionic(self, nums: list[int]) -> int:
+        n = len(nums)
+        
+        # 1. pre_inc[i]: The max sum of a strictly increasing subarray ending at i
+        # We must check all possible starting points 'l' for each peak 'p'
+        # Since the sum can be negative, we track the max possible sum 
+        # for a strictly increasing sequence of length >= 2.
+        
+        # To handle this efficiently, we'll pre-calculate the 
+        # prefix sums of strictly increasing runs.
+        
+        def get_monotonic_sums(arr, strictly_increasing=True):
+            m = len(arr)
+            # best_sum[i] stores the max sum of a valid monotonic 
+            # sequence (length >= 2) ending/starting at i
+            res_sum = [-float('inf')] * m
+            
+            curr_run_sum = arr[0]
+            run_start = 0
+            for i in range(1, m):
+                if (strictly_increasing and arr[i] > arr[i-1]) or \
+                   (not strictly_increasing and arr[i] < arr[i-1]):
+                    curr_run_sum += arr[i]
+                    # The sum of any sub-segment arr[j...i] where j >= run_start
+                    # Because it's strictly monotonic, any j works.
+                    # We want to pick j such that sum(arr[j...i]) is max AND i-j+1 >= 2.
+                    
+                    # We can find the best j by tracking the min prefix sum 
+                    # within the current monotonic run.
+                else:
+                    curr_run_sum = arr[i]
+                    run_start = i
+            # This is complex. Let's simplify.
+            return res_sum
+
+        # Simplified Approach:
+        # For every decreasing bridge p...q, we need to extend it 
+        # to the left (increasing) and right (increasing).
+        
+        max_total = -float('inf')
+        
+        # Find all maximal strictly decreasing segments
+        i = 0
+        while i < n - 1:
+            j = i
+            while j + 1 < n and nums[j] > nums[j+1]:
+                j += 1
+            
+            # Found strictly decreasing bridge nums[i...j]
+            if j > i:
+                # This bridge can have any p in [i, j-1] and q in [i+1, j]
+                # such that p < q.
+                # For simplicity, we can check all p, q within this bridge
+                for p in range(i, j):
+                    # Maximize the left "wing" (strictly increasing ending at p)
+                    # We need at least one element before p: nums[p-1] < nums[p]
+                    left_wing_sum = -float('inf')
+                    curr_left = nums[p]
+                    for l in range(p - 1, -1, -1):
+                        if nums[l] < nums[l+1]:
+                            curr_left += nums[l]
+                            left_wing_sum = max(left_wing_sum, curr_left)
+                        else:
+                            break
+                    
+                    if left_wing_sum == -float('inf'): continue
+                    
+                    curr_bridge_sum = nums[p]
+                    for q in range(p + 1, j + 1):
+                        curr_bridge_sum += nums[q]
+                        
+                        # Maximize the right "wing" (strictly increasing starting at q)
+                        right_wing_sum = -float('inf')
+                        curr_right = nums[q]
+                        for r in range(q + 1, n):
+                            if nums[r] > nums[r-1]:
+                                curr_right += nums[r]
+                                right_wing_sum = max(right_wing_sum, curr_right)
+                            else:
+                                break
+                        
+                        if right_wing_sum != -float('inf'):
+                            # Total = Left Wing + Bridge (p+1 to q-1) + Right Wing
+                            # left_wing_sum already includes nums[l...p]
+                            # right_wing_sum already includes nums[q...r]
+                            middle = curr_bridge_sum - nums[p] - nums[q]
+                            max_total = max(max_total, left_wing_sum + middle + right_wing_sum)
+            
+            i = max(i + 1, j)
+            
+        return max_total
