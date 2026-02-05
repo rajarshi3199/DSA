@@ -1,0 +1,16 @@
+class Solution:
+    def constructTransformedArray(self, nums: list[int]) -> list[int]:
+        n = len(nums)
+        result = [0] * n
+        
+        for i in range(n):
+            if nums[i] == 0:
+                # If value is 0, result[i] is just nums[i]
+                result[i] = nums[i]
+            else:
+                # landing_index handles both positive (right) 
+                # and negative (left) movement
+                landing_index = (i + nums[i]) % n
+                result[i] = nums[landing_index]
+                
+        return result
