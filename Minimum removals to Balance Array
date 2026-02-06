@@ -1,0 +1,23 @@
+class Solution:
+    def minRemoval(self, nums: list[int], k: int) -> int:
+        # Step 1: Sort the array to use the sliding window property
+        nums.sort()
+        
+        n = len(nums)
+        left = 0
+        max_kept = 0
+        
+        # Step 2: Two-pointer / Sliding Window approach
+        for right in range(n):
+            # If the current window is not balanced:
+            # max (nums[right]) > min (nums[left]) * k
+            while nums[right] > nums[left] * k:
+                left += 1
+            
+            # Update the maximum number of elements we can keep
+            current_window_size = right - left + 1
+            if current_window_size > max_kept:
+                max_kept = current_window_size
+                
+        # The minimum removals is the total length minus the elements we kept
+        return n - max_kept
