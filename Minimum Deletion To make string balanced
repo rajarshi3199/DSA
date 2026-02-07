@@ -1,0 +1,19 @@
+class Solution:
+    def minimumDeletions(self, s: str) -> int:
+        # deletions tracks the minimum deletions to keep the string balanced so far
+        deletions = 0
+        # b_count tracks how many 'b' characters we've encountered
+        b_count = 0
+        
+        for char in s:
+            if char == 'b':
+                # If we see a 'b', we don't need to delete anything yet.
+                # We just increment the count of 'b's.
+                b_count += 1
+            else:
+                # If we see an 'a', we have two options:
+                # 1. Delete this 'a' (deletions + 1)
+                # 2. Keep this 'a' and delete all previous 'b's (b_count)
+                deletions = min(deletions + 1, b_count)
+                
+        return deletions
